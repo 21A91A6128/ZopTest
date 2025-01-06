@@ -16,7 +16,7 @@ jobs:
     - name: Authorize to GCP service account
       uses: google-github-actions/auth@v2
       with:
-        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
@@ -30,4 +30,4 @@ jobs:
 
     - name: Update Deployment Image
       run:
-        kubectl set image deployment/test-deployment nginx=nginx:latest --namespace=${{ secrets.NAMESPACE }}
+        kubectl set image deployment/test-deployment nginx=nginx:latest --namespace=two
