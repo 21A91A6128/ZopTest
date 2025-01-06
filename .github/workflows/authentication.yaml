@@ -22,6 +22,7 @@ jobs:
     - name: Set up kubectl
       run: |
         gcloud components install kubectl
+        export GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GCP_CREDENTIALS_JSON }}
         # Get credentials for the GKE cluster, using the project ID directly
         gcloud container clusters get-credentials gke_molten-topic-445707-c0_us-east1_cluster-test-tests --region us-east1 --project molten-topic-445707-c0
 
