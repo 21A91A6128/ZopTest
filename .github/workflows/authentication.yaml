@@ -26,7 +26,7 @@ jobs:
       
     - name: Set GCloud Project and Fetch Cluster Credentials
       run: |
-        gcloud container clusters get-credentials gke_molten-topic-445707-c0_us-east1_cluster-test-tests --region us-east1 --project molten-topic-445707-c0
+        gcloud container clusters get-credentials cluster-test-tests --zone us-east1 --project molten-topic-445707-c0
 
     - name: Update Deployment Image
       run:
