@@ -1,33 +1,38 @@
-name: Deploy to Kubernetes on Google Cloud
+name: GKE Deployment Management
 
 on:
   push:
     branches:
-      - main # Adjust this if your default branch is different
+      - main  # Trigger the workflow on push to the 'main' branch
 
 jobs:
-  deploy:
+  gke:
     runs-on: ubuntu-latest
+
     steps:
-      # Checkout the code from the repository
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      # Set up Google Cloud SDK
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: molten-topic-445707-c0
-          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0.7.0
+      with:
+        project_id: molten-topic-445707-c0
+        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
 
-      # Set up kubectl to interact with GKE
-      - name: Set up kubectl
-        run: |
-          gcloud container clusters get-credentials cluster-test-tests \
-            --region us-east1 \
-            --project molten-topic-445707-c0
+    - name: Set up kubectl
+      run: |
+        gcloud components install kubectl
+        # Authenticate using the service account credentials directly
+        gcloud auth activate-service-account --key-file=${{ secrets.GCP_CREDENTIALS_JSON }}
+        # Get credentials for the GKE cluster
+        gcloud container clusters get-credentials cluster-test-tests --region us-east1 --project molten-topic-445707-c0
 
-      # Get the deployments from the 'two' namespace
-      - name: Get deployments in 'two' namespace
-        run: |
-          kubectl get deployments --namespace=two
+    - name: Get GKE Deployments in 'two' Namespace
+      run: |
+        kubectl get deployments --namespace=two
+        kubectl get deployments --namespace=default  # Optional: Get deployments in the default namespace
+
+    - name: Switch Kubernetes Context (if needed)
+      run: |
+        kubectl config use-context gke_molten-topic-445707-c0_us-east1_cluster-test-tests
+        kubectl get deployments  # To ensure you're in the correct context
