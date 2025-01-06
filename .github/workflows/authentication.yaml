@@ -1,0 +1,24 @@
+name: Google Cloud Authentication
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Google Cloud credentials
+      uses: google-github-actions/auth@v0
+      with:
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      
+    - name: Verify authentication
+      run: gcloud auth list
+
+    # Add your other steps for deploying to Google Cloud, e.g., applying Terraform, Kubernetes, etc.
