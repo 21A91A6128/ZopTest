@@ -33,4 +33,4 @@ jobs:
 
     - name: Update Deployment Image
       run:
-        kubectl set image deployment/test-deployment nginx=nginx:1.21.0 --namespace=two
+        kubectl set image deployment/test-deployment nginx=nginx:latest --namespace=two
