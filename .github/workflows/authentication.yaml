@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout Code
       uses: actions/checkout@v2
 
     - name: Authorize to GCP service account
@@ -27,3 +27,7 @@ jobs:
     - name: Set GCloud Project and Fetch Cluster Credentials
       run: |
         gcloud container clusters get-credentials gke_molten-topic-445707-c0_us-east1_cluster-test-tests --region us-east1 --project molten-topic-445707-c0
+
+    - name: Update Deployment Image
+      run:
+        kubectl set image deployment/test-deployment nginx=nginx:latest --namespace=${{ secrets.NAMESPACE }}
