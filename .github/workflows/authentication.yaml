@@ -3,7 +3,7 @@ name: GKE Deployment Management
 on:
   push:
     branches:
-      - main  # Trigger the workflow on push to the 'main' branch
+      - main
 
 jobs:
   gke:
@@ -13,25 +13,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v0.7.0
+    - name: Authorize to GCP service account
+      uses: google-github-actions/auth@v2
       with:
-        project_id: molten-topic-445707-c0  # Set the GCP project ID directly
-        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}  # Your service account key stored in GitHub Secrets
+        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
 
-    - name: Set up kubectl
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      
+    - name: Update Kubectl component
+      run: gcloud --quiet components update kubectl
+      
+    - name: Set GCloud Project and Fetch Cluster Credentials
       run: |
-        gcloud components install kubectl
-        export GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GCP_CREDENTIALS_JSON }}
-        # Get credentials for the GKE cluster, using the project ID directly
         gcloud container clusters get-credentials gke_molten-topic-445707-c0_us-east1_cluster-test-tests --region us-east1 --project molten-topic-445707-c0
-
-    - name: Get GKE Deployments in 'two' Namespace
-      run: |
-        kubectl get deployments --namespace=two
-        kubectl get deployments --namespace=default  # Optional: Get deployments in the default namespace
-
-    - name: Switch to a different Kubernetes context (if needed)
-      run: |
-        kubectl config use-context gke_molten-topic-445707-c0_us-east1_cluster-test-tests
-        kubectl get deployments  # To ensure you're in the correct context
