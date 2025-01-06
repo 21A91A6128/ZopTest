@@ -1,24 +1,33 @@
-name: Google Cloud Authentication
+name: Deploy to Kubernetes on Google Cloud
 
 on:
   push:
     branches:
-      - main
+      - main # Adjust this if your default branch is different
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      # Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Google Cloud credentials
-      uses: google-github-actions/auth@v0
-      with:
-        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-      
-    - name: Verify authentication
-      run: gcloud auth list
+      # Set up Google Cloud SDK
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: molten-topic-445707-c0
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
-    # Add your other steps for deploying to Google Cloud, e.g., applying Terraform, Kubernetes, etc.
+      # Set up kubectl to interact with GKE
+      - name: Set up kubectl
+        run: |
+          gcloud container clusters get-credentials cluster-test-tests \
+            --region us-east1 \
+            --project molten-topic-445707-c0
+
+      # Get the deployments from the 'two' namespace
+      - name: Get deployments in 'two' namespace
+        run: |
+          kubectl get deployments --namespace=two
